@@ -18,8 +18,8 @@ from ...schemas import BaseSchema
 from ...types import NotSet
 from ...utils import NOT_SET
 from .constants import LOCATION_TO_CONTAINER
-from .parameters import OpenAPIParameter, parameters_to_json_schema
 from .negative import negative_schema
+from .parameters import OpenAPIParameter, parameters_to_json_schema
 
 PARAMETERS = frozenset(("path_parameters", "headers", "cookies", "query", "body"))
 SLASH = "/"
@@ -179,11 +179,11 @@ def is_yaml_parsing_issue(operation: APIOperation) -> bool:
 
 
 def _get_body_strategy(
-    parameter: OpenAPIParameter, to_strategy: Callable[[Dict[str, Any]], st.SearchStrategy], parent_schema: BaseSchema
+    parameter: OpenAPIParameter, to_strategy: Callable[[Dict[str, Any], str], st.SearchStrategy], parent_schema: BaseSchema
 ) -> st.SearchStrategy:
     schema = parameter.as_json_schema()
     schema = parent_schema.prepare_schema(schema)
-    strategy = to_strategy(schema)
+    strategy = to_strategy(schema, "body")
     if not parameter.is_required:
         strategy |= st.just(NOT_SET)
     return strategy
@@ -215,7 +215,7 @@ def get_parameters_value(
 
 def get_parameters_strategy(
     operation: APIOperation,
-    to_strategy: Callable[[Dict[str, Any]], st.SearchStrategy],
+    to_strategy: Callable[[Dict[str, Any], str], st.SearchStrategy],
     location: str,
     exclude: Iterable[str] = (),
 ) -> st.SearchStrategy:
@@ -235,7 +235,7 @@ def get_parameters_strategy(
             schema["properties"].pop(name, None)
             with suppress(ValueError):
                 schema["required"].remove(name)
-        strategy = to_strategy(schema)
+        strategy = to_strategy(schema, location)
         serialize = operation.get_parameter_serializer(location)
         if serialize is not None:
             strategy = strategy.map(serialize)
@@ -254,12 +254,12 @@ def get_parameters_strategy(
     return st.none()
 
 
-def make_positive_strategy(schema: Dict[str, Any]) -> st.SearchStrategy:
+def make_positive_strategy(schema: Dict[str, Any], location: str) -> st.SearchStrategy:
     return from_schema(schema, custom_formats=STRING_FORMATS)
 
 
-def make_negative_strategy(schema: Dict[str, Any], parameter: str) -> st.SearchStrategy:
-    return negative_schema(schema, parameter=parameter, custom_formats=STRING_FORMATS)
+def make_negative_strategy(schema: Dict[str, Any], location: str) -> st.SearchStrategy:
+    return negative_schema(schema, location=location, custom_formats=STRING_FORMATS)
 
 
 def is_valid_path(parameters: Dict[str, Any]) -> bool:
