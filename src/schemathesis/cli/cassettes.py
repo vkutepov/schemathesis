@@ -9,6 +9,7 @@ from typing import Any, Dict, Generator, Iterator, List, Optional, cast
 import attr
 import click
 import requests
+from deepdiff import DeepDiff
 from requests.cookies import RequestsCookieJar
 from requests.structures import CaseInsensitiveDict
 
@@ -254,5 +255,5 @@ def get_prepared_request(data: Dict[str, Any]) -> requests.PreparedRequest:
 
 
 def diff_responses(cassete_response, new_response):
-    assert DeepDiff(cassete_response, new_response, ignore_order=True) == {},\
+    assert DeepDiff(cassete_response, (new_response), ignore_order=True) == {},\
         "responses does not match"

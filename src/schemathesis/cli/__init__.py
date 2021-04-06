@@ -846,7 +846,7 @@ def replay(
         click.secho(f"  {bold('URI')}             : {replayed.interaction['request']['uri']}")
         click.secho(f"  {bold('Old status code')} : {replayed.interaction['response']['status']['code']}")
         click.secho(f"  {bold('New status code')} : {replayed.response.status_code}\n")
-        diff and diff_responses(replayed.interaction['response']['body'], replayed.response.text)
+        diff and diff_responses(replayed.interaction['response']['body'], replayed.response.json())
 
 
 def bold(message: str) -> str:
