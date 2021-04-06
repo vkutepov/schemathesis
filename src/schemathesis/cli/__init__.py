@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 import click
 import hypothesis
 import yaml
+from schemathesis.cli.cassettes import diff_responses
 
 from .. import checks as checks_module
 from .. import fixups as _fixups
@@ -822,12 +823,14 @@ def execute(
 @click.option("--status", help="Status of interactions to replay.", type=str)
 @click.option("--uri", help="A regexp that filters interactions by their request URI.", type=str)
 @click.option("--method", help="A regexp that filters interactions by their request method.", type=str)
+@click.option("--diff", help="diff responses", type=bool)
 def replay(
     cassette_path: str,
     id_: Optional[str],
     status: Optional[str] = None,
     uri: Optional[str] = None,
     method: Optional[str] = None,
+    diff: Optional[bool] = None
 ) -> None:
     """Replay a cassette.
 
@@ -843,6 +846,7 @@ def replay(
         click.secho(f"  {bold('URI')}             : {replayed.interaction['request']['uri']}")
         click.secho(f"  {bold('Old status code')} : {replayed.interaction['response']['status']['code']}")
         click.secho(f"  {bold('New status code')} : {replayed.response.status_code}\n")
+        diff and diff_responses(replayed.interaction['response']['body'], replayed.response.text)
 
 
 def bold(message: str) -> str:

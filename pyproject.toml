@@ -47,6 +47,8 @@ starlette = "^0.13.2"
 yarl = "^1.5"
 curlify = "^2.2.1"
 typing-extensions = "^3.7.4"
+deepdiff = "^5.2.3"
+
 
 [tool.poetry.dev-dependencies]
 coverage = "^5"
@@ -61,6 +63,7 @@ typing_extensions = "^3.7"
 flask = "^1.1"
 fastapi = "^0.62.0"
 sphinx = "^3.5.3"
+
 
 [tool.poetry.plugins]
 pytest11 = {schemathesis = "schemathesis.extra.pytest_plugin"}

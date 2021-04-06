@@ -251,3 +251,8 @@ def get_prepared_request(data: Dict[str, Any]) -> requests.PreparedRequest:
     headers = [(key, value[0]) for key, value in data["headers"].items()]
     prepared.headers = CaseInsensitiveDict(headers)
     return prepared
+
+
+def diff_responses(cassete_response, new_response):
+    assert DeepDiff(cassete_response, new_response, ignore_order=True) == {},\
+        "responses does not match"
