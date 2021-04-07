@@ -1,6 +1,6 @@
 FROM python:3.9-alpine
 
-LABEL Name=Schemathesis
+LABEL Name=Schemathesis_diff
 
 WORKDIR /app
 

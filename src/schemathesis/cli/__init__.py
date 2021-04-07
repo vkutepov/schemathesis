@@ -853,7 +853,7 @@ def replay(
         click.secho(f"  {bold('New request')} : {replayed.response.request.body}\n")
         if diff:
             old_resp = replayed.interaction['response']['body']['base64_string']
-            pytest.my_global_variable = {
+            pytest.schemathesis = {
                 'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
                 'new': replayed.response.json()
             }
