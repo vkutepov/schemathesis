@@ -6,6 +6,7 @@ import sys
 import traceback
 from collections import defaultdict
 from enum import Enum
+from os.path import dirname, abspath
 from typing import Any, Callable, Dict, Generator, Iterable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
@@ -856,7 +857,7 @@ def replay(
                 'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
                 'new': replayed.response.json()
             }
-            pytest.main(["-v", "./test/cli/test_replay.py::test_diff_responses"])
+            pytest.main(["-v", f"{os.path.abspath('../cli/tests/test_replay.py')}"])
 
 
 def bold(message: str) -> str:
