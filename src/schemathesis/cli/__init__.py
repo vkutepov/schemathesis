@@ -1,4 +1,6 @@
+import base64
 import enum
+import json
 import os
 import sys
 import traceback
@@ -9,8 +11,8 @@ from urllib.parse import urlparse
 
 import click
 import hypothesis
+import pytest
 import yaml
-from schemathesis.cli.cassettes import diff_responses
 
 from .. import checks as checks_module
 from .. import fixups as _fixups
@@ -823,7 +825,7 @@ def execute(
 @click.option("--status", help="Status of interactions to replay.", type=str)
 @click.option("--uri", help="A regexp that filters interactions by their request URI.", type=str)
 @click.option("--method", help="A regexp that filters interactions by their request method.", type=str)
-@click.option("--diff", help="diff responses", type=bool)
+@click.option("--diff", help="Comparing new response with the old", type=bool)
 def replay(
     cassette_path: str,
     id_: Optional[str],
@@ -846,7 +848,15 @@ def replay(
         click.secho(f"  {bold('URI')}             : {replayed.interaction['request']['uri']}")
         click.secho(f"  {bold('Old status code')} : {replayed.interaction['response']['status']['code']}")
         click.secho(f"  {bold('New status code')} : {replayed.response.status_code}\n")
-        diff and diff_responses(replayed.interaction['response']['body'], replayed.response.json())
+        click.secho(f"  {bold('Old request')} : {replayed.interaction['request']}\n")
+        click.secho(f"  {bold('New request')} : {replayed.response.request.body}\n")
+        if diff:
+            old_resp = replayed.interaction['response']['body']['base64_string']
+            pytest.my_global_variable = {
+                'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
+                'new': replayed.response.json()
+            }
+            pytest.main(["-v", "./test/cli/test_replay.py::test_diff_responses"])
 
 
 def bold(message: str) -> str:
