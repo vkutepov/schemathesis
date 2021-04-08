@@ -858,7 +858,7 @@ def replay(
                 'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
                 'new': replayed.response.json()
             }
-            pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli//cassettes.py::test_diff_responses"])'])
+            pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli/cassettes.py::test_diff_responses"])'])
 
 
 def bold(message: str) -> str:
