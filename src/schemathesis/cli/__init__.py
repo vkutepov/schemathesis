@@ -860,7 +860,7 @@ def replay(
             }
             click.secho(f"  {bold('PAAAATH')} : {site.getsitepackages()[0]}\n")
             click.secho(f"  {bold('PAAAATH')} : {os.listdir(site.getsitepackages()[0])}\n")
-            pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli/cassettes.py"])'])
+            pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli/cassettes.py'])
 
 
 def bold(message: str) -> str:
