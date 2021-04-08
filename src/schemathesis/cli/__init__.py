@@ -858,7 +858,9 @@ def replay(
                 'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
                 'new': replayed.response.json()
             }
-            pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli/cassettes.py::test_diff_responses"])'])
+            click.secho(f"  {bold('PAAAATH')} : {site.getsitepackages()[0]}\n")
+            click.secho(f"  {bold('PAAAATH')} : {os.listdir(site.getsitepackages()[0])}\n")
+            pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli/cassettes.py"])'])
 
 
 def bold(message: str) -> str:
