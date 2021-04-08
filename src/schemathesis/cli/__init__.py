@@ -2,6 +2,7 @@ import base64
 import enum
 import json
 import os
+import site
 import sys
 import traceback
 from collections import defaultdict
@@ -857,7 +858,7 @@ def replay(
                 'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
                 'new': replayed.response.json()
             }
-            pytest.main(["-v", f"{os.path.abspath('../cli/tests/test_replay.py')}"])
+            pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli//cassettes.py::test_diff_responses"])'])
 
 
 def bold(message: str) -> str:

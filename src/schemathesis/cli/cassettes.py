@@ -8,7 +8,9 @@ from typing import Any, Dict, Generator, Iterator, List, Optional, cast
 
 import attr
 import click
+import pytest
 import requests
+from deepdiff import DeepDiff
 from requests.cookies import RequestsCookieJar
 from requests.structures import CaseInsensitiveDict
 
@@ -251,3 +253,10 @@ def get_prepared_request(data: Dict[str, Any]) -> requests.PreparedRequest:
     headers = [(key, value[0]) for key, value in data["headers"].items()]
     prepared.headers = CaseInsensitiveDict(headers)
     return prepared
+
+
+def test_diff_responses():
+    assert DeepDiff(
+        pytest.schemathesis['old'],
+        pytest.schemathesis['new'],
+        ignore_order=True) == {}
