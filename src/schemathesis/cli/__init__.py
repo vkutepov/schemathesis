@@ -849,6 +849,8 @@ def replay(
         click.secho(f"  {bold('URI')}             : {replayed.interaction['request']['uri']}")
         click.secho(f"  {bold('Old status code')} : {replayed.interaction['response']['status']['code']}")
         click.secho(f"  {bold('New status code')} : {replayed.response.status_code}\n")
+        click.secho(f"  {bold('Old request')} : {replayed.interaction['request']}\n")
+        click.secho(f"  {bold('New request')} : {replayed.response.request.body}\n")
         if diff:
             store_responses(replayed)
             pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli/cassettes.py'])
