@@ -1,4 +1,6 @@
+import base64
 import enum
+import json
 import os
 import site
 import sys
@@ -12,7 +14,6 @@ import click
 import hypothesis
 import pytest
 import yaml
-from schemathesis.cli.cassettes import store_responses
 
 from .. import checks as checks_module
 from .. import fixups as _fixups
@@ -852,7 +853,11 @@ def replay(
         click.secho(f"  {bold('Old request')} : {replayed.interaction['request']}\n")
         click.secho(f"  {bold('New request')} : {replayed.response.request.body}\n")
         if diff:
-            store_responses(replayed)
+            old_resp = replayed.interaction['response']['body']['base64_string']
+            pytest.schemathesis.append({
+                'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
+                'new': replayed.response.json()
+            })
             pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli/cassettes.py'])
 
 
