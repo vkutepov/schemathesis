@@ -1,13 +1,10 @@
-import base64
 import enum
-import json
 import os
 import site
 import sys
 import traceback
 from collections import defaultdict
 from enum import Enum
-from os.path import dirname, abspath
 from typing import Any, Callable, Dict, Generator, Iterable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
@@ -15,6 +12,7 @@ import click
 import hypothesis
 import pytest
 import yaml
+from schemathesis.cli.cassettes import store_responses
 
 from .. import checks as checks_module
 from .. import fixups as _fixups
@@ -841,6 +839,7 @@ def replay(
     Cassettes in VCR-compatible format can be replayed.
     For example, ones that are recorded with ``store-network-log`` option of `schemathesis run` command.
     """
+    pytest.schemathesis = []
     click.secho(f"{bold('Replaying cassette')}: {cassette_path}")
     with open(cassette_path) as fd:
         cassette = yaml.load(fd, Loader=SafeLoader)
@@ -850,16 +849,8 @@ def replay(
         click.secho(f"  {bold('URI')}             : {replayed.interaction['request']['uri']}")
         click.secho(f"  {bold('Old status code')} : {replayed.interaction['response']['status']['code']}")
         click.secho(f"  {bold('New status code')} : {replayed.response.status_code}\n")
-        click.secho(f"  {bold('Old request')} : {replayed.interaction['request']}\n")
-        click.secho(f"  {bold('New request')} : {replayed.response.request.body}\n")
         if diff:
-            old_resp = replayed.interaction['response']['body']['base64_string']
-            pytest.schemathesis = {
-                'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
-                'new': replayed.response.json()
-            }
-            click.secho(f"  {bold('PAAAATH')} : {site.getsitepackages()[0]}\n")
-            click.secho(f"  {bold('PAAAATH')} : {os.listdir(site.getsitepackages()[0])}\n")
+            store_responses(replayed)
             pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli/cassettes.py'])
 
 

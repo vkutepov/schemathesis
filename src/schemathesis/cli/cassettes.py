@@ -255,8 +255,16 @@ def get_prepared_request(data: Dict[str, Any]) -> requests.PreparedRequest:
     return prepared
 
 
+def store_responses(replayed):
+    old_resp = replayed.interaction['response']['body']['base64_string']
+    pytest.responses.append({
+        'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
+        'new': replayed.response.json()
+    })
+
+
 def test_diff_responses():
     assert DeepDiff(
-        pytest.schemathesis['old'],
-        pytest.schemathesis['new'],
+        pytest.responses['old'],
+        pytest.responses['new'],
         ignore_order=True) == {}

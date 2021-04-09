@@ -184,7 +184,7 @@ async def test_replay(openapi_version, cli, schema_url, app, reset_app, cassette
     reset_app(openapi_version)
     assert not app["incoming_requests"]
     # When a valid cassette is replayed
-    result = cli.replay(str(cassette_path), '--diff=True')
+    result = cli.replay(str(cassette_path))
     assert result.exit_code == ExitCode.OK, result.stdout
     cassette = load_cassette(cassette_path)
     interactions = cassette["http_interactions"]
