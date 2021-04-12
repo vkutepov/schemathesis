@@ -834,7 +834,8 @@ def replay(
     status: Optional[str] = None,
     uri: Optional[str] = None,
     method: Optional[str] = None,
-    diff: Optional[bool] = None
+    diff: Optional[bool] = False,
+    grpc: Optional[bool] = False
 ) -> None:
     """Replay a cassette.
 

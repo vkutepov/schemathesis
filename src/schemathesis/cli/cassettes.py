@@ -264,7 +264,7 @@ def store_responses(replayed):
 
 
 def pytest_generate_tests(metafunc):
-    if "schemathesis" in metafunc.funcargnames:
+    if "schemathesis" in metafunc.fixturenames:
         metafunc.parametrize("schemathesis", pytest.schemathesis)
 
 
