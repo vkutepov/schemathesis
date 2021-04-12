@@ -255,8 +255,21 @@ def get_prepared_request(data: Dict[str, Any]) -> requests.PreparedRequest:
     return prepared
 
 
-def test_diff_responses():
+def store_responses(replayed):
+    old_resp = replayed.interaction['response']['body']['base64_string']
+    pytest.schemathesis.append({
+        'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
+        'new': replayed.response.json()
+    })
+
+
+def pytest_generate_tests(metafunc):
+    if "schemathesis" in metafunc.funcargnames:
+        metafunc.parametrize("schemathesis", pytest.schemathesis)
+
+
+def test_diff_responses(schemathesis):
     assert DeepDiff(
-        pytest.schemathesis['old'],
-        pytest.schemathesis['new'],
+        schemathesis['old'],
+        schemathesis['new'],
         ignore_order=True) == {}

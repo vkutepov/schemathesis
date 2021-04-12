@@ -14,6 +14,7 @@ import click
 import hypothesis
 import pytest
 import yaml
+from schemathesis.cli.cassettes import store_responses
 
 from .. import checks as checks_module
 from .. import fixups as _fixups
@@ -840,6 +841,7 @@ def replay(
     Cassettes in VCR-compatible format can be replayed.
     For example, ones that are recorded with ``store-network-log`` option of `schemathesis run` command.
     """
+    pytest.schemathesis = []
     click.secho(f"{bold('Replaying cassette')}: {cassette_path}")
     with open(cassette_path) as fd:
         cassette = yaml.load(fd, Loader=SafeLoader)
@@ -851,13 +853,8 @@ def replay(
         click.secho(f"  {bold('New status code')} : {replayed.response.status_code}\n")
         click.secho(f"  {bold('Old request')} : {replayed.interaction['request']}\n")
         click.secho(f"  {bold('New request')} : {replayed.response.request.body}\n")
-        if diff:
-            old_resp = replayed.interaction['response']['body']['base64_string']
-            pytest.schemathesis = {
-                'old': json.loads(base64.b64decode(old_resp).decode('utf-8')),
-                'new': replayed.response.json()
-            }
-            pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli/cassettes.py'])
+        diff and store_responses(replayed)
+    diff and pytest.main(["-v", f'{site.getsitepackages()[0]}/schemathesis/cli/cassettes.py'])
 
 
 def bold(message: str) -> str:
